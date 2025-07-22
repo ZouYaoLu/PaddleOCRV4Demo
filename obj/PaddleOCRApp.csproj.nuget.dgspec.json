@@ -1,0 +1,87 @@
+{
+  "format": 1,
+  "restore": {
+    "/workspace/PaddleOCRApp.csproj": {}
+  },
+  "projects": {
+    "/workspace/PaddleOCRApp.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/workspace/PaddleOCRApp.csproj",
+        "projectName": "PaddleOCRApp",
+        "projectPath": "/workspace/PaddleOCRApp.csproj",
+        "packagesPath": "/home/ubuntu/.nuget/packages/",
+        "outputPath": "/workspace/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ubuntu/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "OpenCvSharp4": {
+              "target": "Package",
+              "version": "[4.10.0.20240616, )"
+            },
+            "Sdcb.OpenCvSharp4.mini.runtime.ubuntu.22.04-x64": {
+              "target": "Package",
+              "version": "[4.11.0.35, )"
+            },
+            "Sdcb.OpenVINO.PaddleOCR": {
+              "target": "Package",
+              "version": "[0.6.8, )"
+            },
+            "Sdcb.OpenVINO.PaddleOCR.Models.Online": {
+              "target": "Package",
+              "version": "[0.6.2, )"
+            },
+            "Sdcb.OpenVINO.runtime.ubuntu.22.04-x64": {
+              "target": "Package",
+              "version": "[2023.3.0, )"
+            },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/ubuntu/.dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
