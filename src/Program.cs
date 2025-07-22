@@ -1,7 +1,8 @@
 using OpenCvSharp;
-using Sdcb.OpenVINO.PaddleOCR;
-using Sdcb.OpenVINO.PaddleOCR.Models;
-using Sdcb.OpenVINO.PaddleOCR.Models.Online;
+using Sdcb.PaddleOCR;
+using Sdcb.PaddleOCR.Models;
+using Sdcb.PaddleOCR.Models.Online;
+using Sdcb.PaddleInference;
 using System.Diagnostics;
 
 namespace PaddleOCRApp

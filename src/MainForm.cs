@@ -1,7 +1,8 @@
 using OpenCvSharp;
-using Sdcb.OpenVINO.PaddleOCR;
-using Sdcb.OpenVINO.PaddleOCR.Models;
-using Sdcb.OpenVINO.PaddleOCR.Models.Online;
+using Sdcb.PaddleOCR;
+using Sdcb.PaddleOCR.Models;
+using Sdcb.PaddleOCR.Models.Online;
+using Sdcb.PaddleInference;
 using System.Diagnostics;
 
 namespace PaddleOCRApp
@@ -12,6 +13,7 @@ namespace PaddleOCRApp
         private FullOcrModel? _model;
         private string? _currentImagePath;
         private readonly string _modelsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "models");
+        private readonly string _modelFileName = "paddleocr_v4_chinese.model";
 
         public MainForm()
         {
@@ -29,8 +31,20 @@ namespace PaddleOCRApp
 
         private void CheckModelsExistence()
         {
-            toolStripStatusLabel.Text = "请先下载模型";
+            string modelPath = Path.Combine(_modelsDirectory, _modelFileName);
+            if (File.Exists(modelPath))
+            {
+                toolStripStatusLabel.Text = "检测到已下载的模型";
+                btnDownloadModels.Text = "重新下载模型";
+            }
+            else
+            {
+                toolStripStatusLabel.Text = "请先下载模型";
+                btnDownloadModels.Text = "下载模型";
+            }
         }
+
+
 
         private async void btnDownloadModels_Click(object sender, EventArgs e)
         {
@@ -41,14 +55,36 @@ namespace PaddleOCRApp
                 toolStripProgressBar.Style = ProgressBarStyle.Marquee;
                 toolStripStatusLabel.Text = "正在下载模型...";
 
-                // 下载 PaddleOCR V4 模型
+                // 检查是否需要重新下载
+                string modelPath = Path.Combine(_modelsDirectory, _modelFileName);
+                bool forceDownload = File.Exists(modelPath);
+
+                if (forceDownload)
+                {
+                    var result = MessageBox.Show("模型已存在，是否重新下载？", "确认",
+                                                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result == DialogResult.No)
+                    {
+                        toolStripStatusLabel.Text = "取消下载";
+                        return;
+                    }
+                }
+
+                // 下载 PaddleOCR V4 模型（会下载到用户缓存目录）
                 _model = await OnlineFullModels.ChineseV4.DownloadAsync();
-                
+
+                // 创建标记文件到我们的模型目录
+                await File.WriteAllTextAsync(modelPath, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
                 toolStripStatusLabel.Text = "模型下载完成";
-                MessageBox.Show("模型下载完成！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
+                MessageBox.Show($"模型下载完成！\n" +
+                              $"注意：模型实际保存在系统缓存目录中\n" +
+                              $"标记文件保存在：{_modelsDirectory}", "提示",
+                              MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                 // 初始化 OCR 预测器
                 InitializeOCRFromModel();
+                btnDownloadModels.Text = "重新下载模型";
             }
             catch (Exception ex)
             {
@@ -70,18 +106,48 @@ namespace PaddleOCRApp
                 try
                 {
                     _ocrPredictor?.Dispose();
-                    _ocrPredictor = new PaddleOcrAll(_model)
+
+                    // 尝试使用GPU设备，如果失败则回退到CPU
+                    Action<PaddleConfig> deviceConfig;
+                    string deviceInfo;
+
+                    try
+                    {
+                        deviceConfig = PaddleDevice.Gpu();
+                        deviceInfo = " (NVIDIA GPU加速)";
+                        toolStripStatusLabel.Text = "正在初始化 OCR 引擎 (GPU)...";
+
+                        MessageBox.Show("成功启用GPU加速！", "GPU加速", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception gpuEx)
+                    {
+                        deviceConfig = PaddleDevice.Mkldnn();
+                        deviceInfo = " (CPU - Intel MKL-DNN)";
+                        toolStripStatusLabel.Text = "正在初始化 OCR 引擎 (CPU)...";
+
+                        MessageBox.Show($"GPU加速不可用，使用CPU模式。\n\n" +
+                                      $"如需GPU加速，请：\n" +
+                                      $"1. 在项目文件中取消注释对应显卡的GPU包\n" +
+                                      $"2. 安装CUDA 12.9和cuDNN 9.1.0\n" +
+                                      $"3. 确保NVIDIA驱动是最新版本\n" +
+                                      $"4. 重新编译项目\n\n" +
+                                      $"错误详情: {gpuEx.Message}",
+                                      "使用CPU模式", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                    _ocrPredictor = new PaddleOcrAll(_model, deviceConfig)
                     {
                         AllowRotateDetection = true,
-                        Enable180Classification = checkBoxUseClassifier.Checked,
+                        Enable180Classification = true, // checkBoxUseClassifier.Checked,
                     };
-                    
-                    toolStripStatusLabel.Text = "OCR 引擎已就绪";
+
+                    toolStripStatusLabel.Text = $"OCR 引擎已就绪{deviceInfo}";
                     btnOCR.Enabled = _currentImagePath != null;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"初始化 OCR 引擎失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    toolStripStatusLabel.Text = "OCR 引擎初始化失败";
                 }
             }
         }

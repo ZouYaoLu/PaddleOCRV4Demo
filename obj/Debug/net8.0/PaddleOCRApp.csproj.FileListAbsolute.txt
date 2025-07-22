@@ -1,6 +1,0 @@
-/workspace/obj/Debug/net8.0/PaddleOCRApp.csproj.AssemblyReference.cache
-/workspace/obj/Debug/net8.0/PaddleOCRApp.GeneratedMSBuildEditorConfig.editorconfig
-/workspace/obj/Debug/net8.0/PaddleOCRApp.AssemblyInfoInputs.cache
-/workspace/obj/Debug/net8.0/PaddleOCRApp.AssemblyInfo.cs
-/workspace/obj/Debug/net8.0/PaddleOCRApp.csproj.CoreCompileInputs.cache
-/workspace/obj/Debug/net8.0/PaddleOCRApp.sourcelink.json
