@@ -1,6 +1,6 @@
 # PaddleOCR V4 Windows Forms 应用程序
 
-这是一个基于 .NET 8 和 Windows Forms 开发的 PaddleOCR V4 文字识别应用程序，使用 OpenVINO.NET 进行推理加速。
+这是一个基于 .NET 8 和 Windows Forms 开发的 PaddleOCR V4 文字识别应用程序，使用 Sdcb.OpenVINO.PaddleOCR 进行推理加速。
 
 ## 功能特性
 
@@ -36,10 +36,19 @@
 4. **开始识别**: 点击"开始识别"按钮进行 OCR 处理
 5. **查看结果**: 在右侧文本框中查看详细的识别结果
 
+## 界面布局
+
+- **顶部**: 模型下载按钮
+- **配置区域**: GPU、方向分类、文本检测/识别选项和线程数设置
+- **左侧**: 图片选择和显示区域，包含识别按钮
+- **右侧**: 识别结果显示区域，包含执行时间
+- **底部**: 状态栏显示当前操作状态和进度
+
 ## 依赖项
 
-- OpenVINO.CSharp.API.Extensions.PaddleOCR
-- OpenVINO.runtime.win
+- Sdcb.OpenVINO.PaddleOCR
+- Sdcb.OpenVINO.PaddleOCR.Models.Online
+- Sdcb.OpenVINO.runtime.win-x64
 - OpenCvSharp4
 - OpenCvSharp4.runtime.win
 
@@ -50,9 +59,38 @@
 - 支持 CPU 和 GPU 加速
 - 异步处理，界面不会冻结
 - 详细的性能统计信息
+- 友好的 Windows Forms 用户界面
+
+## 项目结构
+
+```
+PaddleOCRApp/
+├── PaddleOCRApp.csproj     # 项目文件
+├── Program.cs              # 程序入口点
+├── MainForm.cs             # 主窗体逻辑
+├── MainForm.Designer.cs    # 主窗体设计器文件
+└── README.md               # 说明文档
+```
+
+## 编译说明
+
+如果需要从源码编译：
+
+1. 安装 .NET 8.0 SDK
+2. 克隆或下载源码
+3. 在项目目录运行：
+   ```
+   dotnet restore
+   dotnet build
+   ```
 
 ## 注意事项
 
 - 首次下载模型可能需要较长时间，请保持网络连接
 - GPU 加速需要兼容的显卡驱动
 - 建议使用清晰、分辨率适中的图片以获得最佳识别效果
+- Windows Forms 应用程序仅支持 Windows 平台
+
+## 许可证
+
+本项目基于相关开源许可证发布，请遵守对应的许可证条款。
